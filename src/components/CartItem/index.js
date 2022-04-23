@@ -8,16 +8,17 @@ import './index.css'
 const CartItem = props => (
   <CartContext.Consumer>
     {value => {
-      const {
-        deleteCartItem,
-        addCartQuantity,
-        quantity,
-        reduceCartQuantity,
-      } = value
+      const {deleteCartItem, addCartQuantity, reduceCartQuantity} = value
       const {cartItemDetails} = props
-      const {id, title, brand, price, imageUrl} = cartItemDetails
+      const {id, title, brand, quantity, price, imageUrl} = cartItemDetails
       const onDeleteCartItem = () => {
         deleteCartItem(id)
+      }
+      const onAddQuantity = () => {
+        addCartQuantity(id)
+      }
+      const onReduceQuantity = () => {
+        reduceCartQuantity(id, deleteCartItem)
       }
       return (
         <li className="cart-item">
@@ -30,7 +31,7 @@ const CartItem = props => (
             <div className="cart-quantity-container">
               <button
                 type="button"
-                onClick={reduceCartQuantity}
+                onClick={onReduceQuantity}
                 className="quantity-controller-button"
               >
                 <BsDashSquare color="#52606D" size={12} />
@@ -38,7 +39,7 @@ const CartItem = props => (
               <p className="cart-quantity">{quantity}</p>
               <button
                 type="button"
-                onClick={addCartQuantity}
+                onClick={onAddQuantity}
                 className="quantity-controller-button"
               >
                 <BsPlusSquare color="#52606D" size={12} />

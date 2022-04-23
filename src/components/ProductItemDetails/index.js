@@ -20,6 +20,7 @@ const apiStatusConstants = {
 class ProductItemDetails extends Component {
   state = {
     productData: {},
+    quantity: 1,
     similarProductsData: [],
     apiStatus: apiStatusConstants.initial,
   }
@@ -39,6 +40,16 @@ class ProductItemDetails extends Component {
     title: data.title,
     totalReviews: data.total_reviews,
   })
+
+  onDecrementQuantity = () => {
+    const {quantity} = this.state
+    if (quantity > 1)
+      this.setState(prevState => ({quantity: prevState.quantity - 1}))
+  }
+
+  onIncrementQuantity = () => {
+    this.setState(prevState => ({quantity: prevState.quantity + 1}))
+  }
 
   getProductData = async () => {
     const {match} = this.props
@@ -99,7 +110,7 @@ class ProductItemDetails extends Component {
   renderProductDetailsView = () => (
     <CartContext.Consumer>
       {value => {
-        const {productData, similarProductsData} = this.state
+        const {productData, quantity, similarProductsData} = this.state
         const {
           availability,
           brand,
@@ -110,19 +121,12 @@ class ProductItemDetails extends Component {
           title,
           totalReviews,
         } = productData
-        const {
-          addCartItem,
-          cartList,
-          quantity,
-          addCartQuantity,
-          reduceCartQuantity,
-        } = value
+        const {addCartItem, cartList} = value
 
         const onClickAddToCart = () => {
           const item = {...productData, quantity}
           const isAvailable = cartList.find(each => each.id === item.id)
-          if (quantity < 1) window.alert('atleast one qauntity')
-          else if (!isAvailable && quantity >= 1) addCartItem(item)
+          if (!isAvailable) addCartItem(item)
         }
 
         return (
@@ -157,7 +161,7 @@ class ProductItemDetails extends Component {
                   <button
                     type="button"
                     className="quantity-controller-button"
-                    onClick={reduceCartQuantity}
+                    onClick={this.onDecrementQuantity}
                   >
                     <BsDashSquare className="quantity-controller-icon" />
                   </button>
@@ -165,7 +169,7 @@ class ProductItemDetails extends Component {
                   <button
                     type="button"
                     className="quantity-controller-button"
-                    onClick={addCartQuantity}
+                    onClick={this.onIncrementQuantity}
                   >
                     <BsPlusSquare className="quantity-controller-icon" />
                   </button>

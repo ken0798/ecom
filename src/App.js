@@ -15,11 +15,16 @@ import './App.css'
 class App extends Component {
   state = {
     cartList: [],
-    quantity: 1,
   }
 
   addCartItem = product => {
     this.setState(prevState => ({cartList: [...prevState.cartList, product]}))
+  }
+
+  removeAllItems = () => {
+    this.setState({
+      cartList: [],
+    })
   }
 
   deleteCartItem = id => {
@@ -30,21 +35,35 @@ class App extends Component {
     })
   }
 
-  onDecrementQuantity = () => {
-    const {quantity, cartList} = this.state
-    if (quantity > 0) {
-      this.setState(prevState => ({quantity: prevState.quantity - 1}))
-    } else {
-      const updateCartList = cartList.filter(each => each.quantity !== 0)
+  onDecrementQuantity = id => {
+    const {cartList} = this.state
+    const getSpecificItem = cartList.find(each => each.id === id)
+    if (getSpecificItem.quantity > 1) {
       this.setState({
-        cartList: updateCartList,
+        cartList: cartList.map(each => {
+          let updateQuantity = each.quantity
+          if (each.id === id) {
+            updateQuantity -= 1
+          }
+          return {...each, quantity: updateQuantity}
+        }),
       })
+    } else {
+      this.deleteCartItem(id)
     }
-    console.log(quantity, cartList)
   }
 
-  onIncrementQuantity = () => {
-    this.setState(prevState => ({quantity: prevState.quantity + 1}))
+  onIncrementQuantity = id => {
+    const {cartList} = this.state
+    this.setState({
+      cartList: cartList.map(obj => {
+        let updateQuantity = obj.quantity
+        if (obj.id === id) {
+          updateQuantity += 1
+        }
+        return {...obj, quantity: updateQuantity}
+      }),
+    })
   }
 
   render() {
@@ -56,6 +75,7 @@ class App extends Component {
           value={{
             cartList,
             quantity,
+            removeAllItems: this.removeAllItems,
             addCartItem: this.addCartItem,
             deleteCartItem: this.deleteCartItem,
             addCartQuantity: this.onIncrementQuantity,
